@@ -21,6 +21,7 @@ export default function TabLayout() {
   los listeners de cada pestaña */
   
   const [hideTabBar, setHideTabBar] = useState(true);
+  
 
   return (
     <Tabs
@@ -32,7 +33,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Ignisterra S.A',
+          title: 'Login',
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
           headerRight: () => (
             <Link href="/modal" asChild>

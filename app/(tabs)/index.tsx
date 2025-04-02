@@ -2,44 +2,46 @@ import React, { useState } from 'react';
 import { StyleSheet, View, SafeAreaView } from 'react-native';
 import { TextInput, Button, Title } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
-import * as yup from 'yup';
 import { useFormik } from 'formik';
+import * as yup from 'yup';
+
 
 const LoginForm = () => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  /* const [username, setUsername] = useState("");
+  const [password, setPassword] = useState(""); */
   const [showPassword, setShowPassword] = useState(false);
   const navigation = useNavigation();
 
-  const handleLogin = () => {
-    // Aquí iría la lógica de autenticación
+  //validacion con formik basica
+const validationSchema = yup.object().shape({
+    username: yup.string().required('Usuario requerido')
+    .min (3, 'Mínimo 3 caracteres')
+    .max (10, 'Máximo 20 caracteres'),
+    password: yup.string()
+      .required('Contraseña requerida')
+      .min(6, 'Mínimo 6 caracteres'),
+  });
+
+  /* const handleLogin = () => {
+    
     console.log("Username:", username);
     console.log("Password:", password);
 
     navigation.navigate("two");
-  };
+  }; */
 
-  //validacion con Yup
-  let schema = yup.object().shape({
-    username: yup.string().required(),
-    password: yup.string().required(),
-    age: yup.number().required().positive().integer(),
-    email: yup.string().email(),
-    website: yup.string().url(),
-    createdOn: yup.date().default(function () {
-      return new Date();
-    }),
+  //aca agarra los valores de los inputs de mas abajo para compararlos
+  const formik = useFormik({
+    initialValues: {
+      username: '',
+      password: '',
+    },
+    validationSchema: validationSchema,
+    onSubmit: (values) => {
+      console.log("Datos del login:", values);
+      navigation.navigate("two");
+    },
   });
-
-  // check validity
-  schema
-    .isValid({
-      username: "jimmy",
-      password: 'asd123',
-    })
-    .then(function (valid) {
-      valid; // => true
-    });
 
   return (
     <SafeAreaView style={styles.container}>
@@ -48,35 +50,42 @@ const LoginForm = () => {
 
         <TextInput
           label="Usuario"
-          value={username}
-          onChangeText={setUsername}
+          value={formik.values.username}
+          onChangeText={formik.handleChange('username')}
+          onBlur={formik.handleBlur('username')}
           mode="outlined"
           style={styles.input}
-          left={<TextInput.Icon icon="account" />}
+          left={<TextInput.Icon icon="account" color="black"/>}
+          /* y ahora como podria hacer para que el momento de que halla un error me lo diga abajo del label? */
+          error={formik.touched.username && !!formik.errors.username}
+          helperText={formik.touched.username && formik.errors.username}
         />
 
         <TextInput
           label="Contraseña"
-          value={password}
-          onChangeText={setPassword}
+          value={formik.values.password}
+          onChangeText={formik.handleChange('password')}
+          onBlur={formik.handleBlur('password')}
           secureTextEntry={!showPassword}
           mode="outlined"
           style={styles.input}
-          left={<TextInput.Icon icon="lock" />}
+          left={<TextInput.Icon icon="lock" color="black" />}
           right={
             <TextInput.Icon
               icon={showPassword ? "eye-off" : "eye"}
               onPress={() => setShowPassword(!showPassword)}
             />
           }
+          error={formik.touched.password && !!formik.errors.password}
+          helperText={formik.touched.password && formik.errors.password}
         />
 
         <Button
           mode="contained"
-          onPress={handleLogin}
+          onPress={formik.handleSubmit}
           style={styles.button}
           contentStyle={styles.buttonContent}
-          disabled={!username || !password}
+          disabled={!formik.isValid || !formik.dirty}
         >
           Ingresar
         </Button>
@@ -85,6 +94,7 @@ const LoginForm = () => {
   );
 };
 
+// Los estilos se mantienen igual
 const styles = StyleSheet.create({
   container: {
     flex: 1,
