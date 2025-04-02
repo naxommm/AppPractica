@@ -9,13 +9,14 @@ import { createStackNavigator } from '@react-navigation/stack';
 const Stack = createNativeStackNavigator();
 
 
-//aca estan las rutas para navegar entre pantallas
+//aca estan las rutas para navegar entre pantallas, con el menu de abajo
 const App = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Login">
         <Stack.Screen name="index" component={LoginForm} />
         <Stack.Screen name="two" component={two} />
+        <Stack.Screen name="three" component={three} />
       </Stack.Navigator>
     </NavigationContainer>
   );
