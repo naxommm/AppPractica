@@ -1,22 +1,24 @@
-import { Provider as PaperProvider } from 'react-native-paper';
+/* import { Provider as PaperProvider, configureFonts, DefaultTheme } from 'react-native-paper';
 import LoginForm from '.app/(tabs)/index.tsx';
-import { configureFonts, DefaultTheme, Provider as PaperProvider } from 'react-native-paper';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import React from 'react';
+import React from 'react';      
 import { createStackNavigator } from '@react-navigation/stack';
+import LoginForm from './app/(tabs)/index';
+import Two from './app/(tabs)/two';
+import Three from './app/(tabs)/three';
 
 const Stack = createNativeStackNavigator();
 
 
-//aca estan las rutas para navegar entre pantallas, con el menu de abajo
+
 const App = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Login">
         <Stack.Screen name="index" component={LoginForm} />
-        <Stack.Screen name="two" component={two} />
-        <Stack.Screen name="three" component={three} />
+        <Stack.Screen name="two" component={Two} />
+        <Stack.Screen name="three" component={Three} />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -43,4 +45,4 @@ export default function App() {
       <LoginForm />
     </PaperProvider>
   );
-}
+} */

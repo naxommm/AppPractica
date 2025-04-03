@@ -1,10 +1,17 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Button } from 'react-native';
+import { useNavigation} from '@react-navigation/native';
+import { TouchableOpacity } from 'react-native';
+import { router } from 'expo-router';
 
 export default function ThreeScreen() {
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Welcome to My App</Text>
             <Text style={styles.subtitle}>Explore and discover amazing features</Text>
+            <Button
+                title="Devolverse"
+                onPress={() => router.back()}
+            />
         </View>
     );
 }

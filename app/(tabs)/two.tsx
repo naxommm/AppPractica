@@ -4,7 +4,7 @@ import * as React from "react";
 import { StyleSheet } from "react-native";
 import { Avatar, Card, IconButton, Button, Divider } from "react-native-paper";
 import { TouchableOpacity } from "react-native";
-/* import { router } from 'expo-router';  */
+import { router } from 'expo-router';  
 import {  useNavigation } from '@react-navigation/native';
 
 const MyComponent = () => (
@@ -14,8 +14,8 @@ const MyComponent = () => (
     <Card.Title
       title="Card Title1"
       left={(props) => ( 
-        <TouchableOpacity onPress={() => navigation.navigate('three')}>
-          <Avatar.Icon {...props} icon="folder" color="green" />
+        <TouchableOpacity onPress={() => router.push('/screens/three')}>
+          <Avatar.Icon {...props} icon="baguette" color="green" />
         </TouchableOpacity>
       )}
     />
@@ -23,7 +23,7 @@ const MyComponent = () => (
       title="Card Title2"
       left={(props) => (
         <TouchableOpacity onPress={() => console.log("Funciona2")}>
-          <Avatar.Icon {...props} icon="folder" color="orange"/>
+          <Avatar.Icon {...props} icon="baguette" color="orange"/>
         </TouchableOpacity>
       )}
     />
@@ -31,7 +31,7 @@ const MyComponent = () => (
       title="Card Title3"
       left={(props) => (
         <TouchableOpacity onPress={() => console.log("Funciona3")}>
-          <Avatar.Icon {...props} icon="folder" color="blue" />
+          <Avatar.Icon {...props} icon="baguette" color="blue" />
         </TouchableOpacity>
       )}
     />
