@@ -6,12 +6,13 @@ import { router } from 'expo-router';
 export default function ThreeScreen() {
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Welcome to My App</Text>
+            <Text style={styles.title}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sed vero error ducimus reiciendis. Deserunt, atque animi quibusdam, perspiciatis numquam ex non incidunt et cupiditate asperiores qui unde praesentium a ipsum?</Text>
             <Text style={styles.subtitle}>Explore and discover amazing features</Text>
             <Button
                 title="Devolverse"
                 onPress={() => router.back()}
             />
+            
         </View>
     );
 }

@@ -48,6 +48,7 @@ export default function TabLayout() {
         name="two"
         options={{
           title: "tab 2",
+          headerShown: true,
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
         }}
         listeners={{
@@ -55,7 +56,7 @@ export default function TabLayout() {
         }}
       />
 
-      <Tabs.Screen
+      {/* <Tabs.Screen
         name="three"
         options={{
           title: "Tercero",
@@ -65,7 +66,7 @@ export default function TabLayout() {
         listeners={{
           focus: () => setHideTabBar(false),
         }}
-      />
+      /> */}
     </Tabs>
   );
 }

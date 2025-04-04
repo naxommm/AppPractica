@@ -14,7 +14,7 @@ const MyComponent = () => (
     <Card.Title
       title="Card Title1"
       left={(props) => ( 
-        <TouchableOpacity onPress={() => router.push('/screens/three')}>
+        <TouchableOpacity onPress={() => router.push('/screens')}>
           <Avatar.Icon {...props} icon="baguette" color="green" />
         </TouchableOpacity>
       )}
