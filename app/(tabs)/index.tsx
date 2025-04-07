@@ -56,7 +56,7 @@ const validationSchema = yup.object().shape({
           mode="outlined"
           style={styles.input}
           left={<TextInput.Icon icon="account" color="black"/>}
-          /* y ahora como podria hacer para que el momento de que halla un error me lo diga abajo del label? */
+          /* y ahora como podria hacer para que el momento de que haya un error me lo diga abajo del label? */
           error={formik.touched.username && !!formik.errors.username}
           helperText={formik.touched.username && formik.errors.username}
         />

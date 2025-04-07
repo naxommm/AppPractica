@@ -5,7 +5,7 @@ import { StyleSheet } from "react-native";
 import { Avatar, Card, IconButton, Button, Divider } from "react-native-paper";
 import { TouchableOpacity } from "react-native";
 import { router } from 'expo-router';  
-import {  useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 
 const MyComponent = () => (
   <View style={styles.container}>
