@@ -1,22 +1,53 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, SafeAreaView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, View, SafeAreaView, Alert } from 'react-native';
 import { TextInput, Button, Title } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
+import axios from 'axios' ;
 
 
 const LoginForm = () => {
-  /* const [username, setUsername] = useState("");
-  const [password, setPassword] = useState(""); */
   const [showPassword, setShowPassword] = useState(false);
   const navigation = useNavigation();
 
-  //validacion con formik basica
-const validationSchema = yup.object().shape({
+  // 2 variables del tipo de yutu
+  const [info, setInfo] = useState<any>({});
+  const [loading, setLoading] = useState(true);
+
+  /* const axios = require('axios').default; */
+
+  const apiUrl = "http://127.0.0.1:8000/login";
+  const apiUrl2 = "http://127.0.0.1:8000/";
+  /* http://127.0.0.1:8000/docs#/ */
+
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(apiUrl);
+     /*  const response = await axios.get(apiUrl2); */
+      const data = response.data;
+      console.log(data);
+      
+      setInfo(data);
+    } catch (error: any) {
+      console.log(error);
+
+    }finally{
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+
+  //validaciones del formulario de yup
+  const validationSchema = yup.object().shape({
     username: yup.string().required('Usuario requerido')
-    .min (3, 'Mínimo 3 caracteres')
-    .max (10, 'Máximo 20 caracteres'),
+      .min(3, 'Mínimo 3 caracteres')
+      .max(10, 'Máximo 20 caracteres'),
     password: yup.string()
       .required('Contraseña requerida')
       .min(6, 'Mínimo 6 caracteres'),
@@ -31,6 +62,7 @@ const validationSchema = yup.object().shape({
   }; */
 
   //aca agarra los valores de los inputs de mas abajo para compararlos
+  
   const formik = useFormik({
     initialValues: {
       username: '',
@@ -39,7 +71,7 @@ const validationSchema = yup.object().shape({
     validationSchema: validationSchema,
     onSubmit: (values) => {
       console.log("Datos del login:", values);
-      navigation.navigate("two");
+        navigation.navigate("two");
     },
   });
 
@@ -50,13 +82,13 @@ const validationSchema = yup.object().shape({
 
         <TextInput
           label="Usuario"
+          
           value={formik.values.username}
           onChangeText={formik.handleChange('username')}
           onBlur={formik.handleBlur('username')}
           mode="outlined"
           style={styles.input}
-          left={<TextInput.Icon icon="account" color="black"/>}
-          /* y ahora como podria hacer para que el momento de que haya un error me lo diga abajo del label? */
+          left={<TextInput.Icon icon="account" color="black" />}
           error={formik.touched.username && !!formik.errors.username}
           helperText={formik.touched.username && formik.errors.username}
         />
@@ -82,19 +114,25 @@ const validationSchema = yup.object().shape({
 
         <Button
           mode="contained"
-          onPress={formik.handleSubmit}
+          onPress={() => {formik.handleSubmit(); fetchData();}}
           style={styles.button}
           contentStyle={styles.buttonContent}
           disabled={!formik.isValid || !formik.dirty}
         >
           Ingresar
         </Button>
+
+        <Button
+          mode="contained"
+          onPress={fetchData}
+        >
+         aaaaaaaa
+        </Button>
       </View>
     </SafeAreaView>
   );
 };
 
-// Los estilos se mantienen igual
 const styles = StyleSheet.create({
   container: {
     flex: 1,

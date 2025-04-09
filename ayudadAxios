@@ -1,0 +1,27 @@
+ // variable para el loading (la cual no use pero el tipo del video si)
+ const [info, setInfo] = useState<any>({});
+ const [loading, setLoading] = useState(true);
+
+ 
+ const apiUrl = //url del fastapi donde estan los mensajes entrecomillas
+ 
+ //variable para recibir los datos de la api 
+ const fetchData = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(apiUrl);
+      const data = response.data;
+      console.log(data);
+      
+      setInfo(data);
+    } catch (error: any) {
+      console.log(error);
+
+    }finally{
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
