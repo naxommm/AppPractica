@@ -18,14 +18,14 @@ const LoginForm = () => {
   /* const axios = require('axios').default; */
 
   const apiUrl = "http://127.0.0.1:8000/login";
-  const apiUrl2 = "http://127.0.0.1:8000/";
+  /* const apiUrl2 = "http://127.0.0.1:8000/"; */
   /* http://127.0.0.1:8000/docs#/ */
 
+  //variable para mostrar lo de la api
   const fetchData = async () => {
     setLoading(true);
     try {
       const response = await axios.get(apiUrl);
-     /*  const response = await axios.get(apiUrl2); */
       const data = response.data;
       console.log(data);
       
@@ -50,7 +50,7 @@ const LoginForm = () => {
       .max(10, 'Máximo 20 caracteres'),
     password: yup.string()
       .required('Contraseña requerida')
-      .min(6, 'Mínimo 6 caracteres'),
+      .min(4, 'Mínimo 4 caracteres'),
   });
 
   /* const handleLogin = () => {
@@ -69,9 +69,32 @@ const LoginForm = () => {
       password: '',
     },
     validationSchema: validationSchema,
-    onSubmit: (values) => {
-      console.log("Datos del login:", values);
-        navigation.navigate("two");
+    //al  momento de hacer el submit se envia el formulario con los datos
+    onSubmit: async (values) => {  
+      try {
+
+        // Envia los datos a la api por un post
+        const response = await axios.post(
+          "http://127.0.0.1:8000/login",
+          {
+            username: values.username,
+            password: values.password,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+  
+        // Muestra la respuesta en consola + la respuesta de la api
+        console.log("Respuesta de la API:", response.data);
+        
+        // Navega a la siguiente pantalla si es exitoso transportanto el valor de username
+        navigation.navigate("two", { username: values.username });
+      } catch (error: any) {
+        console.error("Error al enviar datos:", error.response?.data || error.message);
+      }
     },
   });
 
@@ -114,7 +137,7 @@ const LoginForm = () => {
 
         <Button
           mode="contained"
-          onPress={() => {formik.handleSubmit(); fetchData();}}
+          onPress={formik.handleSubmit} 
           style={styles.button}
           contentStyle={styles.buttonContent}
           disabled={!formik.isValid || !formik.dirty}

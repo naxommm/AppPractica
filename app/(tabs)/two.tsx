@@ -5,12 +5,30 @@ import { StyleSheet } from "react-native";
 import { Avatar, Card, IconButton, Button, Divider } from "react-native-paper";
 import { TouchableOpacity } from "react-native";
 import { router } from 'expo-router';  
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
-const MyComponent = () => (
+// parametros de navegacion para este tsx
+type TwoScreenParams = {
+  username: string;
+};
+
+const MyComponent = () => {
+
+// Obtener parámetros de la navegación
+const route = useRoute();
+const { username } = route.params as TwoScreenParams;
+
+return (
   <View style={styles.container}>
-    <Avatar.Icon size={64} icon="account-hard-hat" color="white" />
+    <View style={{ alignItems: 'center' }}>
+      <Avatar.Icon size={64} icon="account-hard-hat" color="white" />
+
+      {/* mostrar el username mandando de la pantalla de index por la api */}
+      <Text style={{ marginTop: 8 }}>{username || 'Usuario no indefinido'}</Text>
+    </View>
+
     <Divider />
+
     <Card.Title
       title="Card Title1"
       left={(props) => ( 
@@ -19,6 +37,8 @@ const MyComponent = () => (
         </TouchableOpacity>
       )}
     />
+
+
     <Card.Title
       title="Card Title2"
       left={(props) => (
@@ -27,6 +47,8 @@ const MyComponent = () => (
         </TouchableOpacity>
       )}
     />
+
+
     <Card.Title
       title="Card Title3"
       left={(props) => (
@@ -44,6 +66,7 @@ const MyComponent = () => (
     </Card>
   </View>
 );
+};
 
 const styles = StyleSheet.create({
   container: {
