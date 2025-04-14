@@ -46,11 +46,11 @@ const LoginForm = () => {
   //validaciones del formulario de yup
   const validationSchema = yup.object().shape({
     username: yup.string().required('Usuario requerido')
-      .min(3, 'Mínimo 3 caracteres')
+      .min(5, 'Mínimo 5 caracteres')
       .max(10, 'Máximo 20 caracteres'),
     password: yup.string()
       .required('Contraseña requerida')
-      .min(4, 'Mínimo 4 caracteres'),
+      .min(5, 'Mínimo 5 caracteres'),
   });
 
   /* const handleLogin = () => {
@@ -69,6 +69,7 @@ const LoginForm = () => {
       password: '',
     },
     validationSchema: validationSchema,
+    
     //al  momento de hacer el submit se envia el formulario con los datos
     onSubmit: async (values) => {  
       try {
@@ -105,15 +106,15 @@ const LoginForm = () => {
 
         <TextInput
           label="Usuario"
-          
           value={formik.values.username}
           onChangeText={formik.handleChange('username')}
           onBlur={formik.handleBlur('username')}
           mode="outlined"
           style={styles.input}
-          left={<TextInput.Icon icon="account" color="black" />}
+          left={<TextInput.Icon icon="account" color={formik.errors.username ? 'red' : 'black'} />}
           error={formik.touched.username && !!formik.errors.username}
           helperText={formik.touched.username && formik.errors.username}
+          helperTextStyle={{ color: 'red' }}
         />
 
         <TextInput
@@ -124,39 +125,44 @@ const LoginForm = () => {
           secureTextEntry={!showPassword}
           mode="outlined"
           style={styles.input}
-          left={<TextInput.Icon icon="lock" color="black" />}
+          left={<TextInput.Icon icon="lock" color={formik.errors.password ? 'red' : 'black'} />}
           right={
             <TextInput.Icon
               icon={showPassword ? "eye-off" : "eye"}
               onPress={() => setShowPassword(!showPassword)}
+              color={formik.errors.password ? 'red' : 'black'}
             />
           }
           error={formik.touched.password && !!formik.errors.password}
           helperText={formik.touched.password && formik.errors.password}
+          helperTextStyle={{ color: 'red' }}
         />
 
         <Button
           mode="contained"
-          onPress={formik.handleSubmit} 
-          style={styles.button}
+          onPress={formik.handleSubmit}
+          style={[
+            styles.button,
+            { backgroundColor: (!formik.isValid || !formik.dirty) ? 'gray' : '#6200ee' }
+          ]}
           contentStyle={styles.buttonContent}
           disabled={!formik.isValid || !formik.dirty}
+          labelStyle={{ color: 'white' }}
         >
           Ingresar
         </Button>
 
-        <Button
-          mode="contained"
-          onPress={fetchData}
-        >
-         aaaaaaaa
-        </Button>
       </View>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  helperText: {
+    color: 'red',
+    fontSize: 12,
+    marginTop: 4,
+  },
   container: {
     flex: 1,
     justifyContent: 'center',

@@ -1,0 +1,28 @@
+// Variable que captura el "username" y lo muestra con un mensaje 
+        const welcomeMsg = `Bienvenido ${values.username}`; 
+        
+        
+        if (Platform.OS === 'web') {
+          window.alert(welcomeMsg);
+        } else {
+          Alert.alert("Exito", welcomeMsg);
+        }
+        
+        // Navega a la siguiente pantalla si es exitoso transportanto el valor de username
+        navigation.navigate("two", { username: values.username });
+      } catch (error: any) {
+
+      // Manejo de errores
+      const errorMessage = error.response?.data?.detail || "No se pudo contactar al servidor";
+      
+      // Alerta segun plataforma
+      if (Platform.OS === 'web') {
+        window.alert(`Error: ${errorMessage}`);
+      } else {
+        Alert.alert("Error", errorMessage);
+      }
+
+      console.error("Error:", error);
+    }
+  },
+});
