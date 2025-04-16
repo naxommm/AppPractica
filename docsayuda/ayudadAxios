@@ -1,4 +1,4 @@
- // variable para el loading (la cual no use pero el tipo del video si)
+/*  // variable para el loading (la cual no use pero el tipo del video si)
  const [info, setInfo] = useState<any>({});
  const [loading, setLoading] = useState(true);
 
@@ -24,4 +24,4 @@
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, []); */

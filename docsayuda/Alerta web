@@ -1,4 +1,4 @@
-// Variable que captura el "username" y lo muestra con un mensaje 
+/* // Variable que captura el "username" y lo muestra con un mensaje 
         const welcomeMsg = `Bienvenido ${values.username}`; 
         
         
@@ -25,4 +25,4 @@
       console.error("Error:", error);
     }
   },
-});
+}); */

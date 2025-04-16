@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, SafeAreaView, Alert } from 'react-native';
-import { TextInput, Button, Title } from 'react-native-paper';
+import { TextInput, Button, Title, Text } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import axios from 'axios' ;
-
+import { useFocusEffect } from '@react-navigation/native';
 
 const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const navigation = useNavigation();
+
+  /* //variable para el error de autenticacion, solamente funciona cuando los campos no
+  coincidan con los de la api  */
+  const [authError, setAuthError] = useState('');
 
   // 2 variables del tipo de yutu
   const [info, setInfo] = useState<any>({});
@@ -45,12 +49,13 @@ const LoginForm = () => {
 
   //validaciones del formulario de yup
   const validationSchema = yup.object().shape({
-    username: yup.string().required('Usuario requerido')
+    username: yup.string().required('Campo Obligatorio')
       .min(5, 'Mínimo 5 caracteres')
-      .max(10, 'Máximo 20 caracteres'),
+      .max(10, 'Máximo 10 caracteres'),
     password: yup.string()
-      .required('Contraseña requerida')
-      .min(5, 'Mínimo 5 caracteres'),
+      .required('Campo Obligatorio')
+      .min(5, 'Mínimo 5 caracteres')
+      .max(10, 'Máximo 10 caracteres'),
   });
 
   /* const handleLogin = () => {
@@ -95,9 +100,20 @@ const LoginForm = () => {
         navigation.navigate("two", { username: values.username });
       } catch (error: any) {
         console.error("Error al enviar datos:", error.response?.data || error.message);
+        //se muestra el mensaje que contiene setautherror al momento de que no coinciden los caracteres con la api
+        setAuthError('Credenciales inválidas');
       }
     },
   });
+
+  useFocusEffect(
+    React.useCallback(() => {
+      // Resetea los valores del form
+      formik.resetForm(); 
+      // Limpia el mensaje de error de autenticación
+      setAuthError(''); 
+    }, [])
+  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -113,9 +129,12 @@ const LoginForm = () => {
           style={styles.input}
           left={<TextInput.Icon icon="account" color={formik.errors.username ? 'red' : 'black'} />}
           error={formik.touched.username && !!formik.errors.username}
-          helperText={formik.touched.username && formik.errors.username}
-          helperTextStyle={{ color: 'red' }}
+          maxLength={11}
         />
+        {/* Mostrar mensajes de error de formik */}
+        {formik.touched.username && formik.errors.username && (
+          <Text style={styles.errorText}>{formik.errors.username}</Text>
+        )}
 
         <TextInput
           label="Contraseña"
@@ -125,6 +144,7 @@ const LoginForm = () => {
           secureTextEntry={!showPassword}
           mode="outlined"
           style={styles.input}
+          maxLength={11}
           left={<TextInput.Icon icon="lock" color={formik.errors.password ? 'red' : 'black'} />}
           right={
             <TextInput.Icon
@@ -134,9 +154,11 @@ const LoginForm = () => {
             />
           }
           error={formik.touched.password && !!formik.errors.password}
-          helperText={formik.touched.password && formik.errors.password}
-          helperTextStyle={{ color: 'red' }}
-        />
+          />
+          {/* Mostrar mensajes de error de formik */}
+          {formik.touched.password && formik.errors.password && (
+            <Text style={styles.errorText}>{formik.errors.password}</Text>
+          )}
 
         <Button
           mode="contained"
@@ -151,18 +173,16 @@ const LoginForm = () => {
         >
           Ingresar
         </Button>
-
+        {/* Mostrar mensaje de error de autenticación */}
+        {authError ? (
+          <Text style={styles.authErrorText}>{authError}</Text>
+        ) : null}
       </View>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  helperText: {
-    color: 'red',
-    fontSize: 12,
-    marginTop: 4,
-  },
   container: {
     flex: 1,
     justifyContent: 'center',
@@ -185,6 +205,18 @@ const styles = StyleSheet.create({
   },
   buttonContent: {
     height: 50,
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 12,
+    marginTop: -10,
+    marginBottom: 10,
+  },
+  authErrorText: {
+    color: 'red',
+    fontSize: 14,
+    textAlign: 'center',
+    marginTop: 10,
   },
 });
 
