@@ -30,7 +30,7 @@ return (
     <Divider />
 
     <Card.Title
-      title="Card Title1"
+      title="Ingreso Pellet"
       left={(props) => ( 
         <TouchableOpacity onPress={() => router.push('/screens')}>
           <Avatar.Icon {...props} icon="baguette" color="green" />

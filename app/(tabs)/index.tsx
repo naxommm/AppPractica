@@ -22,8 +22,7 @@ const LoginForm = () => {
   /* const axios = require('axios').default; */
 
   const apiUrl = "http://127.0.0.1:8000/login";
-  /* const apiUrl2 = "http://127.0.0.1:8000/"; */
-  /* http://127.0.0.1:8000/docs#/ */
+  
 
   //variable para mostrar lo de la api
   const fetchData = async () => {
