@@ -31,31 +31,37 @@ return (
 
     <Card.Title
       title="Ingreso Pellet"
+      titleStyle={styles.cardTitle}
       left={(props) => ( 
         <TouchableOpacity onPress={() => router.push('/screens')}>
-          <Avatar.Icon {...props} icon="baguette" color="green" />
+          <Avatar.Icon {...props} icon="baguette" color="green" style={styles.icon} />
         </TouchableOpacity>
       )}
+      style={styles.cardContainer}
     />
 
 
     <Card.Title
-      title="Card Title2"
+      title="Produccion"
+      titleStyle={styles.cardTitle}
       left={(props) => (
-        <TouchableOpacity onPress={() => console.log("Funciona2")}>
+        <TouchableOpacity onPress={() => router.push("../screens/produccion")}>
           <Avatar.Icon {...props} icon="baguette" color="orange"/>
         </TouchableOpacity>
       )}
+      style={styles.cardContainer}
     />
 
 
     <Card.Title
-      title="Card Title3"
+      title="Ley Karin"
+      titleStyle={styles.cardTitle}
       left={(props) => (
-        <TouchableOpacity onPress={() => console.log("Funciona3")}>
+        <TouchableOpacity onPress={() => router.push("../screens/leyKarin")}>
           <Avatar.Icon {...props} icon="baguette" color="blue" />
         </TouchableOpacity>
       )}
+      style={styles.cardContainer}
     />
 
     <Card>
@@ -73,6 +79,23 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    padding: 40,
+  },
+  cardTitle: {
+    fontSize: 20, 
+    fontWeight: "bold", 
+    color: "#333", 
+  },
+  cardContainer: {
+    flexDirection: "row", 
+    alignItems: "center", 
+    marginVertical: 10, 
+    width: "80%", 
+    marginBottom: 5,
+  },
+  icon: {
+    marginRight: 5,
+    width: "90%", 
   },
 });
 

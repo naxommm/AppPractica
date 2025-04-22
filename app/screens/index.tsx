@@ -1,10 +1,9 @@
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { View, Text, StyleSheet, SafeAreaView } from "react-native";
 import { router } from "expo-router";
 import { Picker } from "@react-native-picker/picker";
 import React, { useState, useEffect } from "react";
 import { useFormik } from 'formik';
-import { Button, TextInput } from 'react-native-paper';
+import { Button, TextInput, Checkbox, TouchableRipple  } from 'react-native-paper';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Camera, useCameraPermissions } from "expo-camera";
 import * as yup from "yup";
@@ -12,6 +11,10 @@ import * as yup from "yup";
 
 export default function Pellek() {
   
+  //variable de los checkbox
+  const [reproceso, setReproceso] = useState(false);
+  const [compraFrl, setCompraFrl] = useState(false);
+
   const [permission, setPermission] = useCameraPermissions();
 
   //variables del datetimepicker
@@ -73,7 +76,7 @@ export default function Pellek() {
     },
     validationSchema,
     onSubmit: (values, { resetForm }) => {
-      Alert.alert("Ingreso exitoso", "Los datos han sido registrados correctamente");
+      alert.alert("Ingreso exitoso", "Los datos han sido registrados correctamente");
       resetForm();
       setBarcode("");
     },
@@ -155,8 +158,38 @@ export default function Pellek() {
         <Text style={styles.errorText}>{formik.errors.productType}</Text>
       )}
 
-      {/* funciona solamente en android raro */}
-      
+      {/* funciona solamente en android raro y muestra la fecha seleccionada */}
+      <Text>selected: {date.toLocaleString()}</Text>
+
+      {/* Checkbox de reproceso y compra FRL */}
+      <TouchableRipple
+        onPress={() => setReproceso(!reproceso)}
+        style={styles.checkboxContainer}
+      >
+        <View style={styles.row}>
+          <Checkbox
+            status={reproceso ? 'checked' : 'unchecked'}
+            onPress={() => setReproceso(!reproceso)}
+            color="blue"
+          />
+          <Text style={styles.label}>Reproceso</Text>
+        </View>
+      </TouchableRipple>
+
+      <TouchableRipple
+        onPress={() => setCompraFrl(!compraFrl)}
+        style={styles.checkboxContainer}
+      >
+        <View style={styles.row}>
+          <Checkbox
+            status={compraFrl ? 'checked' : 'unchecked'}
+            onPress={() => setCompraFrl(!compraFrl)}
+            color="blue"
+          />
+          <Text style={styles.label}>Compra FRL</Text>
+        </View>
+      </TouchableRipple>
+
       <Button 
         mode="contained" 
         onPress={() => {
@@ -169,8 +202,6 @@ export default function Pellek() {
         Enviar
       </Button>
 
-
-      <Text>selected: {date.toLocaleString()}</Text>
     </View>
     
   );
@@ -201,5 +232,41 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     overflow: "hidden",
     margin: 20,
+  },
+  picker: {
+    marginBottom: 15,
+    borderWidth: 1,
+    borderColor: "gray",
+    borderRadius: 5,
+  },
+  dateButton: {
+    marginBottom: 10,
+  },
+  errorText: {
+    color: "red",
+    fontSize: 12,
+    marginBottom: 10,
+  },
+  selectedDate: {
+    marginBottom: 15,
+    fontSize: 16,
+  },
+  checkboxContainer: {
+    marginVertical: 10,
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 15,
+    backgroundColor: 'white',
+    borderRadius: 8,
+    elevation: 2,
+  },
+  label: {
+    fontSize: 18,
+    marginLeft: 10,
+    color: '#333',
   },
 });

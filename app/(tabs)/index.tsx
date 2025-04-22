@@ -22,7 +22,7 @@ const LoginForm = () => {
   /* const axios = require('axios').default; */
 
   const apiUrl = "http://127.0.0.1:8000/login";
-  
+  //http://172.20.2.126:8080/login 
 
   //variable para mostrar lo de la api
   const fetchData = async () => {
@@ -81,6 +81,7 @@ const LoginForm = () => {
         // Envia los datos a la api por un post
         const response = await axios.post(
           "http://127.0.0.1:8000/login",
+          //http://172.20.2.126:8080/login 
           {
             username: values.username,
             password: values.password,

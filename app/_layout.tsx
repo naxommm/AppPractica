@@ -54,7 +54,9 @@ function RootLayoutNav() {
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="screens/index" options={{ title: "😺😺😺" ,headerShown: true}} />
+        <Stack.Screen name="screens/index" options={{ title: "Ingreso Pellet" ,headerShown: true}} />
+        <Stack.Screen name="screens/produccion" options={{ title: "Producción" ,headerShown: true}} />
+        <Stack.Screen name="screens/leyKarin" options={{ title: "Ley Karin" ,headerShown: true}} />
         {/* <Stack.Screen name="/screens/three" options={{ title: "😺😺😺" ,headerShown: true}} /> */}
       </Stack>
     </ThemeProvider>
