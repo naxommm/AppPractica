@@ -21,7 +21,7 @@ const LoginForm = () => {
 
   /* const axios = require('axios').default; */
 
-  const apiUrl = "http://127.0.0.1:8000/login";
+  /* const apiUrl = "http://127.0.0.1:8000/login"; */
   //http://172.20.2.126:8080/login 
 
   //variable para mostrar lo de la api
@@ -76,7 +76,9 @@ const LoginForm = () => {
     
     //al  momento de hacer el submit se envia el formulario con los datos
     onSubmit: async (values) => {  
-      try {
+      navigation.navigate("two", { username: values.username });
+
+      /* try {
 
         // Envia los datos a la api por un post
         const response = await axios.post(
@@ -102,7 +104,7 @@ const LoginForm = () => {
         console.error("Error al enviar datos:", error.response?.data || error.message);
         //se muestra el mensaje que contiene setautherror al momento de que no coinciden los caracteres con la api
         setAuthError('Credenciales inválidas');
-      }
+      } */
     },
   });
 

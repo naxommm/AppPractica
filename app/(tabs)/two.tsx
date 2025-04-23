@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
     flexDirection: "row", 
     alignItems: "center", 
     marginVertical: 10, 
-    width: "80%", 
+    
     marginBottom: 5,
   },
   icon: {

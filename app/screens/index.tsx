@@ -1,16 +1,19 @@
-import { View, Text, StyleSheet, SafeAreaView } from "react-native";
-import { router } from "expo-router";
+import { View, Text, StyleSheet, Alert } from "react-native";
 import { Picker } from "@react-native-picker/picker";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useFormik } from 'formik';
 import { Button, TextInput, Checkbox, TouchableRipple  } from 'react-native-paper';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePicker from "@react-native-community/datetimepicker";
 import { Camera, useCameraPermissions } from "expo-camera";
 import * as yup from "yup";
 
 
 export default function Pellek() {
   
+  const [showCamera, setShowCamera] = useState(false);
+  const [hasPermission, requestPermission] = useCameraPermissions();
+
+
   //variable de los checkbox
   const [reproceso, setReproceso] = useState(false);
   const [compraFrl, setCompraFrl] = useState(false);
@@ -66,32 +69,24 @@ export default function Pellek() {
     productType: yup.string().required("El tipo de producto es obligatorio"),
   });
 
-  //variables del formik para los textinput
+  //variables del formik 
   const formik = useFormik({
     initialValues: {
       barcode: "",
       cantidad: "",
       date: date.toISOString().split("T")[0],
       productType: "",
+      reproceso: false,
+      compraFrl: false,
     },
     validationSchema,
     onSubmit: (values, { resetForm }) => {
+      console.log("Datos enviados:", values);
       alert.alert("Ingreso exitoso", "Los datos han sido registrados correctamente");
       resetForm();
       setBarcode("");
     },
   });
-
-  //Solicitar permiso para usar la camara
-  useEffect(() => {
-    (async () => {
-      const { status } = await Camera.requestCameraPermissionsAsync();
-
-      if (status !== 'granted') {
-        alert('No se puede acceder a la cámara');
-      }
-    })();
-  }, []);
 
 
   return (
@@ -101,17 +96,48 @@ export default function Pellek() {
         label="Codigo de Barras"
         value={barcode}
           onChangeText={(text) => {setBarcode(text);
-          formik.setFieldValue("bardocode", text);
+          formik.setFieldValue("barcode", text);
         }}
         onBlur={formik.handleBlur('barcode')}
         mode="outlined"
         style={{ marginBottom: 10 }}
         error={formik.touched.barcode && !!formik.errors.barcode}
+        left={
+          <TextInput.Icon
+          icon="camera"
+          onPress={async () => {
+            const { status } = await requestPermission();
+            if (status !== 'granted') {
+              Alert.alert('Permiso requerido', 'Se necesita permiso para acceder a la cámara.');
+              return;
+            }
+    
+            Alert.alert(
+              'Escanear código',
+              '¿Deseas abrir la cámara para escanear un código de barras?',
+              [
+                { text: 'Cancelar', style: 'cancel' },
+                { text: 'Aceptar', onPress: () => setShowCamera(true) },
+              ]
+            );
+          }}
+          />
+        }
       />
       {formik.touched.barcode && formik.errors.barcode && (
         <Text style={{ color: "red" }}>{formik.errors.barcode}</Text>
       )}
 
+{showCamera && (
+  <Camera
+    style={{ flex: 1 }}
+    onBarCodeScanned={({ data }) => {
+      setShowCamera(false);
+      setBarcode(data);
+      formik.setFieldValue("barcode", data);
+    }}
+  />
+)}
 
       <TextInput
         label="Cantidad"
@@ -150,9 +176,9 @@ export default function Pellek() {
         style={styles.picker}
       >
         <Picker.Item label="Seleccione un tipo de producto" value="" />
-        <Picker.Item label="Producto A" value="1" />
-        <Picker.Item label="Producto B" value="2" />
-        <Picker.Item label="Producto C" value="3" />
+        <Picker.Item label="Bolsas 15KG" value="15kg" />
+        <Picker.Item label="Pallet" value="pallet" />
+        <Picker.Item label="Maxi sacos 1000KG" value="1mkg" />
       </Picker>
       {formik.touched.productType && formik.errors.productType && (
         <Text style={styles.errorText}>{formik.errors.productType}</Text>
@@ -163,13 +189,13 @@ export default function Pellek() {
 
       {/* Checkbox de reproceso y compra FRL */}
       <TouchableRipple
-        onPress={() => setReproceso(!reproceso)}
+        onPress={() => formik.setFieldValue("reproceso", !formik.values.reproceso)}
         style={styles.checkboxContainer}
       >
         <View style={styles.row}>
           <Checkbox
-            status={reproceso ? 'checked' : 'unchecked'}
-            onPress={() => setReproceso(!reproceso)}
+            status={formik.values.reproceso ? 'checked' : 'unchecked'}
+            onPress={() => formik.setFieldValue("reproceso", !formik.values.reproceso)}
             color="blue"
           />
           <Text style={styles.label}>Reproceso</Text>
@@ -177,13 +203,13 @@ export default function Pellek() {
       </TouchableRipple>
 
       <TouchableRipple
-        onPress={() => setCompraFrl(!compraFrl)}
+        onPress={() => formik.setFieldValue("compraFrl", !formik.values.compraFrl)}
         style={styles.checkboxContainer}
       >
         <View style={styles.row}>
           <Checkbox
-            status={compraFrl ? 'checked' : 'unchecked'}
-            onPress={() => setCompraFrl(!compraFrl)}
+            status={formik.values.compraFrl ? 'checked' : 'unchecked'}
+            onPress={() => formik.setFieldValue("compraFrl", !formik.values.compraFrl)}
             color="blue"
           />
           <Text style={styles.label}>Compra FRL</Text>
@@ -193,7 +219,6 @@ export default function Pellek() {
       <Button 
         mode="contained" 
         onPress={() => {
-          console.log("Initial Values:", formik.initialValues);
           formik.handleSubmit();
         }}
         style={{ marginBottom: 10 }}
@@ -201,6 +226,20 @@ export default function Pellek() {
       >
         Enviar
       </Button>
+
+      {showCamera && (
+  <Camera
+    style={{ flex: 1 }}
+    onBarCodeScanned={({ data }) => {
+      setShowCamera(false);
+      setBarcode(data);
+      formik.setFieldValue("barcode", data);
+    }}
+    barCodeScannerSettings={{
+      barCodeTypes: ['code128', 'ean13', 'ean8', 'upc_a', 'upc_e', 'code39', 'qr'], // Puedes ajustar esto
+    }}
+  />
+)}
 
     </View>
     
