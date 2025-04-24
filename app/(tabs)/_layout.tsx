@@ -45,9 +45,9 @@ export default function TabLayout() {
       <Tabs.Screen
         name="two"
         options={{
-          tabBarLabel: "Two",
+          tabBarLabel: "Menu",
           title: "",   
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          tabBarIcon: ({ color }) => <TabBarIcon name="folder" color={color} />,
         }}
         listeners={{
           focus: () => setHideTabBar(false),

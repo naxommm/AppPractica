@@ -1,24 +1,26 @@
-import { View, Text, StyleSheet, Alert } from "react-native";
+import { View, Text, StyleSheet, Alert, TouchableOpacity } from "react-native";
 import { Picker } from "@react-native-picker/picker";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useFormik } from 'formik';
 import { Button, TextInput, Checkbox, TouchableRipple  } from 'react-native-paper';
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { Camera, useCameraPermissions } from "expo-camera";
+import { Camera, useCameraPermissions, CameraView } from "expo-camera";
 import * as yup from "yup";
 
+type Prop = {
+  type: string;
+  data: string;
+};
 
 export default function Pellek() {
-  
-  const [showCamera, setShowCamera] = useState(false);
-  const [hasPermission, requestPermission] = useCameraPermissions();
-
 
   //variable de los checkbox
   const [reproceso, setReproceso] = useState(false);
   const [compraFrl, setCompraFrl] = useState(false);
-
-  const [permission, setPermission] = useCameraPermissions();
+  
+  const [showCamera, setShowCamera] = useState(false);
+  const [permission,requestPermission] = useCameraPermissions();
+  const [scanned,setScanned] = useState(false);
 
   //variables del datetimepicker
   
@@ -58,7 +60,10 @@ export default function Pellek() {
   }; */
 
   const validationSchema = yup.object().shape({
-    barcode: yup.string(),
+    barcode: yup
+    .string()
+    .required("El código de barras es obligatorio"),
+    
     //validacion del campo cantidad que solo acepte numeros
     cantidad: yup
       .number()
@@ -82,45 +87,88 @@ export default function Pellek() {
     validationSchema,
     onSubmit: (values, { resetForm }) => {
       console.log("Datos enviados:", values);
-      alert.alert("Ingreso exitoso", "Los datos han sido registrados correctamente");
+      Alert.alert("Ingreso exitoso", "Los datos han sido registrados correctamente");
       resetForm();
       setBarcode("");
     },
   });
 
+  const handleBarCodeScanned = ({ type, data }: Prop) => {
+    setScanned(true);
+    setBarcode(data);
+    formik.setFieldValue("barcode", data);
+    setShowCamera(false);
+    Alert.alert(
+      `Código ${type} Escaneado`, 
+      `Datos: ${data}`,
+      [{ text: 'OK', onPress: () => setScanned(false) }],
+      { cancelable: false }
+    );
+  };
 
-  return (
-      
+  // solicitar permiso de la camara
+  if (!permission) {
+    return <View />;
+  }
+
+ 
+  if (!permission.granted) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.permissionText}>Permiso de cámara no concedido</Text>
+        <Button mode="contained" onPress={requestPermission}>
+          Solicitar Permiso
+        </Button>
+      </View>
+    );
+  }
+
+  return showCamera ? (
+    <View style={{ flex: 1 }}>
+      <CameraView
+        style={styles.camera}
+        onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
+      >
+        <View style={styles.layerContainer}>
+          <View style={styles.layerTop} />
+          <View style={styles.layerCenter}>
+            <View style={styles.layerLeft} />
+            <View style={styles.focused} />
+            <View style={styles.layerRight} />
+          </View>
+          <View style={styles.layerBottom} />
+        </View>
+      </CameraView>
+
+      {/* Boton para volver al form */}
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={() => setShowCamera(false)}
+      >
+        <Text style={styles.backButtonText}>Volver</Text>
+      </TouchableOpacity>
+    </View>
+  ) : (
     <View style={{ padding: 20 }}>
       <TextInput
         label="Codigo de Barras"
         value={barcode}
-          onChangeText={(text) => {setBarcode(text);
+        
+        onChangeText={(text) => {
+          setBarcode(text);
           formik.setFieldValue("barcode", text);
         }}
-        onBlur={formik.handleBlur('barcode')}
+        onBlur={formik.handleBlur("barcode")}
         mode="outlined"
         style={{ marginBottom: 10 }}
         error={formik.touched.barcode && !!formik.errors.barcode}
         left={
           <TextInput.Icon
-          icon="camera"
-          onPress={async () => {
-            const { status } = await requestPermission();
-            if (status !== 'granted') {
-              Alert.alert('Permiso requerido', 'Se necesita permiso para acceder a la cámara.');
-              return;
-            }
-    
-            Alert.alert(
-              'Escanear código',
-              '¿Deseas abrir la cámara para escanear un código de barras?',
-              [
-                { text: 'Cancelar', style: 'cancel' },
-                { text: 'Aceptar', onPress: () => setShowCamera(true) },
-              ]
-            );
-          }}
+            icon="camera"
+            onPress={() => {
+              setShowCamera(true);
+              setScanned(false);
+            }}
           />
         }
       />
@@ -128,22 +176,11 @@ export default function Pellek() {
         <Text style={{ color: "red" }}>{formik.errors.barcode}</Text>
       )}
 
-{showCamera && (
-  <Camera
-    style={{ flex: 1 }}
-    onBarCodeScanned={({ data }) => {
-      setShowCamera(false);
-      setBarcode(data);
-      formik.setFieldValue("barcode", data);
-    }}
-  />
-)}
-
       <TextInput
         label="Cantidad"
         value={formik.values.cantidad}
-        onChangeText={formik.handleChange('cantidad')}
-        onBlur={formik.handleBlur('cantidad')}
+        onChangeText={formik.handleChange("cantidad")}
+        onBlur={formik.handleBlur("cantidad")}
         mode="outlined"
         style={{ marginBottom: 10 }}
         keyboardType="numeric"
@@ -152,11 +189,26 @@ export default function Pellek() {
       {formik.touched.cantidad && formik.errors.cantidad && (
         <Text style={{ color: "red" }}>{formik.errors.cantidad}</Text>
       )}
-      
-      {/* Datatime picker */}
-      <Button mode="outlined" onPress={() => setShowDatePicker(true)} style={styles.dateButton}>
-        Seleccionar Fecha
-      </Button>
+
+
+      <TextInput
+        label="Fecha seleccionada"
+        value={formik.values.date}
+        mode="outlined"
+        style={styles.textInput}
+        contentStyle={styles.inputContent}
+        outlineStyle={styles.inputOutline}
+        editable={false}
+        right={
+          <TextInput.Icon
+            icon="calendar"
+            onPress={() => setShowDatePicker(true)}
+          />
+        }
+        error={formik.touched.date && !!formik.errors.date}
+        pointerEvents="none" // Permite que el icono sea clickeable
+      />
+
       {showDatePicker && (
         <DateTimePicker
           value={date}
@@ -165,37 +217,42 @@ export default function Pellek() {
           onChange={handleDateChange}
         />
       )}
-      <Text style={styles.selectedDate}>Fecha seleccionada: {formik.values.date}</Text>
+
       {formik.touched.date && formik.errors.date && (
         <Text style={styles.errorText}>{formik.errors.date}</Text>
       )}
-      
-      <Picker
-        selectedValue={formik.values.productType}
-        onValueChange={(itemValue) => formik.setFieldValue("productType", itemValue)}
-        style={styles.picker}
-      >
-        <Picker.Item label="Seleccione un tipo de producto" value="" />
-        <Picker.Item label="Bolsas 15KG" value="15kg" />
-        <Picker.Item label="Pallet" value="pallet" />
-        <Picker.Item label="Maxi sacos 1000KG" value="1mkg" />
-      </Picker>
-      {formik.touched.productType && formik.errors.productType && (
-        <Text style={styles.errorText}>{formik.errors.productType}</Text>
-      )}
 
-      {/* funciona solamente en android raro y muestra la fecha seleccionada */}
-      <Text>selected: {date.toLocaleString()}</Text>
+      <View style={styles.pickerContainer}>
+        <Picker
+          selectedValue={formik.values.productType}
+          onValueChange={(itemValue) =>
+            formik.setFieldValue("productType", itemValue)
+          }
+          style={styles.picker}
+        >
+          <Picker.Item label="Seleccione un tipo de producto" value="" />
+          <Picker.Item label="Bolsas 15KG" value="15kg" />
+          <Picker.Item label="Pallet" value="pallet" />
+          <Picker.Item label="Maxi sacos 1000KG" value="1mkg" />
+        </Picker>
+        {formik.touched.productType && formik.errors.productType && (
+          <Text style={styles.errorText}>{formik.errors.productType}</Text>
+        )}
+      </View>
 
       {/* Checkbox de reproceso y compra FRL */}
       <TouchableRipple
-        onPress={() => formik.setFieldValue("reproceso", !formik.values.reproceso)}
+        onPress={() =>
+          formik.setFieldValue("reproceso", !formik.values.reproceso)
+        }
         style={styles.checkboxContainer}
       >
         <View style={styles.row}>
           <Checkbox
-            status={formik.values.reproceso ? 'checked' : 'unchecked'}
-            onPress={() => formik.setFieldValue("reproceso", !formik.values.reproceso)}
+            status={formik.values.reproceso ? "checked" : "unchecked"}
+            onPress={() =>
+              formik.setFieldValue("reproceso", !formik.values.reproceso)
+            }
             color="blue"
           />
           <Text style={styles.label}>Reproceso</Text>
@@ -203,21 +260,25 @@ export default function Pellek() {
       </TouchableRipple>
 
       <TouchableRipple
-        onPress={() => formik.setFieldValue("compraFrl", !formik.values.compraFrl)}
+        onPress={() =>
+          formik.setFieldValue("compraFrl", !formik.values.compraFrl)
+        }
         style={styles.checkboxContainer}
       >
         <View style={styles.row}>
           <Checkbox
-            status={formik.values.compraFrl ? 'checked' : 'unchecked'}
-            onPress={() => formik.setFieldValue("compraFrl", !formik.values.compraFrl)}
+            status={formik.values.compraFrl ? "checked" : "unchecked"}
+            onPress={() =>
+              formik.setFieldValue("compraFrl", !formik.values.compraFrl)
+            }
             color="blue"
           />
           <Text style={styles.label}>Compra FRL</Text>
         </View>
       </TouchableRipple>
 
-      <Button 
-        mode="contained" 
+      <Button
+        mode="contained"
         onPress={() => {
           formik.handleSubmit();
         }}
@@ -226,25 +287,9 @@ export default function Pellek() {
       >
         Enviar
       </Button>
-
-      {showCamera && (
-  <Camera
-    style={{ flex: 1 }}
-    onBarCodeScanned={({ data }) => {
-      setShowCamera(false);
-      setBarcode(data);
-      formik.setFieldValue("barcode", data);
-    }}
-    barCodeScannerSettings={{
-      barCodeTypes: ['code128', 'ean13', 'ean8', 'upc_a', 'upc_e', 'code39', 'qr'], // Puedes ajustar esto
-    }}
-  />
-)}
-
     </View>
-    
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -264,19 +309,32 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   pickerContainer: {
-    width: "8%",
-    height: 20,
-    borderColor: "gray",
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
     borderWidth: 1,
-    borderRadius: 10,
-    overflow: "hidden",
-    margin: 20,
+    borderColor: '#E0E0E0',
+    marginBottom: 16,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   picker: {
-    marginBottom: 15,
-    borderWidth: 1,
-    borderColor: "gray",
-    borderRadius: 5,
+    height: 56,
+    paddingHorizontal: 16,
+  },
+  pickerItem: {
+    fontSize: 16,
+    color: '#333',
+  },
+  placeholderItem: {
+    fontSize: 16,
+    color: '#999',
   },
   dateButton: {
     marginBottom: 10,
@@ -307,5 +365,86 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginLeft: 10,
     color: '#333',
+  },
+  permissionText: {
+    color: 'red',
+    fontSize: 18,
+    textAlign: 'center',
+    marginHorizontal: 20,
+    marginBottom: 30,
+    fontWeight: '600',
+    lineHeight: 24
+  },
+  layerTop: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+  },
+  layerCenter: {
+    flexDirection: 'row',
+  },
+  layerLeft: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+  },
+  focused: {
+    width: 350,
+    height: 200,
+    borderWidth: 2,
+    borderColor: 'cyan',
+  },
+  layerRight: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+  },
+  layerBottom: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+  },
+  resultContainer: {
+    padding: 20,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+  },
+  camera: {
+    flex: 1,
+    justifyContent: 'flex-end',
+  },
+  layerContainer: {
+    flex: 1,
+  },
+  backButton: {
+    position: 'absolute',
+    top: 40,
+    left: 20,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    padding: 10,
+    borderRadius: 5,
+    zIndex: 1,
+  },
+  backButtonText: {
+    color: 'white',
+    fontSize: 16,
+  },
+  textInput: {
+    backgroundColor: '#FFFFFF',
+    marginBottom: 16,
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  inputContent: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+  },
+  inputOutline: {
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    borderRadius: 8,
   },
 });

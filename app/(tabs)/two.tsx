@@ -20,56 +20,62 @@ const { username } = route.params as TwoScreenParams;
 
 return (
   <View style={styles.container}>
-    <View style={{ alignItems: 'center' }}>
+    <View style={{ alignItems: "center" }}>
       <Avatar.Icon size={64} icon="account-hard-hat" color="white" />
 
       {/* mostrar el username mandando de la pantalla de index por la api */}
-      <Text style={{ marginTop: 8 }}>{username || 'Usuario no indefinido'}</Text>
+      <Text style={{ marginTop: 8 }}>
+        {username || "Usuario no indefinido"}
+      </Text>
     </View>
 
     <Divider />
 
-    <Card.Title
-      title="Ingreso Pellet"
-      titleStyle={styles.cardTitle}
-      left={(props) => ( 
-        <TouchableOpacity onPress={() => router.push('/screens')}>
-          <Avatar.Icon {...props} icon="baguette" color="green" style={styles.icon} />
-        </TouchableOpacity>
-      )}
-      style={styles.cardContainer}
-    />
+    {/* Los touchableopacity estan dentro de un card, y al hacer click */}
 
+    <TouchableOpacity
+      onPress={() => router.push("/screens")}
+      activeOpacity={0.4}
+    >
+      <Card.Title
+        title="Ingreso Pellet"
+        titleStyle={styles.cardTitle}
+        left={(props) => (
+          <Avatar.Icon {...props} icon="barcode" color="#0e0200" />
+        )}
+        style={styles.cardContainer}
+      />
+    </TouchableOpacity>
 
-    <Card.Title
-      title="Produccion"
-      titleStyle={styles.cardTitle}
-      left={(props) => (
-        <TouchableOpacity onPress={() => router.push("../screens/produccion")}>
-          <Avatar.Icon {...props} icon="baguette" color="orange"/>
-        </TouchableOpacity>
-      )}
-      style={styles.cardContainer}
-    />
+    <TouchableOpacity
+      onPress={() => router.push("../screens/produccion")}
+      activeOpacity={0.7}
+    >
+      <Card.Title
+        title="Produccion"
+        titleStyle={styles.cardTitle}
+        left={(props) => (
+          <Avatar.Icon {...props} icon="folder" color="#f8f32b" />
+        )}
+        style={styles.cardContainer}
+      />
+    </TouchableOpacity>
 
+    <TouchableOpacity
+      onPress={() => router.push("../screens/leyKarin")}
+      activeOpacity={0.7}
+    >
+      <Card.Title
+        title="Ley Karin"
+        titleStyle={styles.cardTitle}
+        left={(props) => (
+          <Avatar.Icon {...props} icon="book" color="#009b7d" />
+        )}
+        style={styles.cardContainer}
+      />
+    </TouchableOpacity>
 
-    <Card.Title
-      title="Ley Karin"
-      titleStyle={styles.cardTitle}
-      left={(props) => (
-        <TouchableOpacity onPress={() => router.push("../screens/leyKarin")}>
-          <Avatar.Icon {...props} icon="baguette" color="blue" />
-        </TouchableOpacity>
-      )}
-      style={styles.cardContainer}
-    />
-
-    <Card>
-      <Card.Actions>
-        <Button>Cancel</Button>
-        <Button>Ok</Button>
-      </Card.Actions>
-    </Card>
+    
   </View>
 );
 };
@@ -85,17 +91,22 @@ const styles = StyleSheet.create({
     fontSize: 20, 
     fontWeight: "bold", 
     color: "#333", 
+ 
   },
   cardContainer: {
-    flexDirection: "row", 
-    alignItems: "center", 
-    marginVertical: 10, 
-    
-    marginBottom: 5,
-  },
-  icon: {
-    marginRight: 5,
-    width: "90%", 
+    width: '100%', // Ocupa todo el ancho disponible
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: 'center', // Centra el contenido horizontalmente
+    marginVertical: 10,
+    padding: 15,
+    backgroundColor: '#fff', // Fondo blanco para mejor contraste
+    borderRadius: 8, // Bordes redondeados
+    elevation: 3, // Sombra en Android
+    shadowColor: '#000', // Sombra en iOS
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
 });
 
